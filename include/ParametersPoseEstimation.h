@@ -46,9 +46,9 @@ class ParametersPoseEstimation
             if (!boost::filesystem::exists(filename))
             {
                 cout<<"Unable to find path to the configuration file, default parameters will be loaded\n";
-                pathPlyModels = "/home/pacman/CODE/groovy_workspace/src/pacman_pose_estimation/data/PLY-MODELS/";
+                pathPlyModels = "/home/pacman/poseEstimation/data/PLY-MODELS/";
                 desc_name = "shot_omp";//"fpfh"
-                training_dir = "/home/pacman/CODE/groovy_workspace/src/pacman_pose_estimation/data/TRAINED-LOCAL-MODELS/";
+                training_dir = "/home/pacman/poseEstimation/data/TRAINED-LOCAL-MODELS/";
                 force_retrain = 0;
                 icp_iterations = 5; 
                 use_cache = 1;

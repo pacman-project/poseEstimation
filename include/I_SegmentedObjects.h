@@ -30,7 +30,7 @@ class I_SegmentedObjects
         I_SegmentedObjects()
         {
          //check whether pathToFiles directory exists, otherwise create it
-         pathToFiles = "/home/pacman/UIBKPoseEstimation/data/recognizedObjects/";
+         pathToFiles = "/home/pacman/poseEstimation/data/recognizedObjects/";
          if(!boost::filesystem::exists(pathToFiles))
            boost::filesystem::create_directory(pathToFiles);   
         }
@@ -134,7 +134,11 @@ class I_SegmentedObjects
         {
             return scene;
         }
-        
+        ~I_SegmentedObjects()
+        {
+           pointClouds.clear();
+           segPointClouds.clear();
+        }
     };
 #endif	 
         

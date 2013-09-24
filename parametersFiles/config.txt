@@ -1,6 +1,6 @@
 descriptor_name:shot_omp
-models_dir:/home/pacman/UIBKPoseEstimation/data/PLY-MODELS
-training_dir:/home/pacman/UIBKPoseEstimation/data/TRAINED-LOCAL-MODELS/
+models_dir:/home/pacman/poseEstimation/data/PLY-MODELS
+training_dir:/home/pacman/poseEstimation/data/TRAINED-LOCAL-MODELS/
 force_retrain: 0
 icp_iterations: 5
 use_cache: 1

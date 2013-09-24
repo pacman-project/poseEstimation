@@ -34,13 +34,15 @@ int main (int argc, char ** argv)
 {
     
       char* filename = "../parametersFiles/config.txt";     
-      ParametersPoseEstimation params(filename);
-      I_SegmentedObjects objects;
+      //ParametersPoseEstimation params(filename);
       pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points;        
       pcl::PCDWriter writer;  
       
       for (int i=0; i<3; i++)
       {
+        ParametersPoseEstimation params(filename);
+        I_SegmentedObjects objects;
+
         //change useKinect value in the configuration file depending wether the Kinect sensor is used or not  
         if(params.useKinect)
          {
