@@ -70,7 +70,9 @@ class ParametersPoseEstimation
             else 
             {      
                 //parse the configuration file
+                cout <<"before config file";
                 parseConfigFile(filename);
+                cout <<"after config file";
             }
         };
 

@@ -451,7 +451,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::kinectGrabFrame()
 int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects)
 {
    pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points = kinectGrabFrame();
-   
+   //cout <<"points:" <<xyz_points->points.size();
    if( xyz_points->points.size() < 10 )
       return -1;
 
