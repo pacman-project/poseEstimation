@@ -1,6 +1,6 @@
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/apps/3d_rec_framework/tools/openni_frame_source.h>
-#include <pcl/filters/passthrough.h>
+//#include <pcl/visualization/pcl_visualizer.h>
+//#include <pcl/apps/3d_rec_framework/tools/openni_frame_source.h>
+//#include <pcl/filters/passthrough.h>
 #include "ParametersPoseEstimation.h"
 
 using namespace std;
@@ -33,7 +33,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr kinectGrabFrame()
 int main (int argc, char ** argv)
 {
     
-      char* filename = "../parametersFiles/config.txt";     
+      string filename = "../parametersFiles/config.txt";     
       //ParametersPoseEstimation params(filename);
       pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points;        
       pcl::PCDWriter writer;  
@@ -47,14 +47,16 @@ int main (int argc, char ** argv)
         if(params.useKinect)
          {
             //grab a frame from Kinect and save it to a point cloud
-            xyz_points = kinectGrabFrame();  
+        //    xyz_points = kinectGrabFrame();  
        
             //write the point cloud from Kinect to file     
             //writer.write<pcl::PointXYZ> ("scene.pcd", *xyz_points, false);          
          }       
            
         //perform pose estimation for the objects in the point cloud
-        params.recognizePose(objects,xyz_points);
+        //params.recognizePose(objects,xyz_points);
+        params.recognizePose(objects);
+        
         sleep(1);
       }
  

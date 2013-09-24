@@ -26,6 +26,9 @@
 #include <pcl/filters/filter.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/console/parse.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/apps/3d_rec_framework/tools/openni_frame_source.h>
+#include <pcl/filters/passthrough.h>
        
 using namespace std;
 
@@ -40,7 +43,7 @@ class ParametersPoseEstimation
           float thres_hyp, desc_radius, CG_SIZE_, sampling_density;
 
         //constructor which initilizes the main paramters 
-        ParametersPoseEstimation(char* filename)
+        ParametersPoseEstimation(string filename)
         {
             //check if the configuration file exists, otherwise use default configuration
             if (!boost::filesystem::exists(filename))
@@ -72,9 +75,11 @@ class ParametersPoseEstimation
         };
 
         //parse configuration file and set parameters values
-        void parseConfigFile(char* filename);
-
+        void parseConfigFile(string filename);
+        
+        pcl::PointCloud<pcl::PointXYZ>::Ptr kinectGrabFrame();
         //perform pose estimation for the 'xyz_points' scene
-        int recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points);
+       // int recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points);
+        int recognizePose(I_SegmentedObjects &objects);
     };
 #endif	 

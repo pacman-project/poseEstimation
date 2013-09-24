@@ -5,10 +5,10 @@
       
 using namespace std;
 
- void ParametersPoseEstimation::parseConfigFile(char* filename)
+ void ParametersPoseEstimation::parseConfigFile(string filename)
  {
    ifstream inputFile;
-   inputFile.open(filename);
+   inputFile.open(filename.c_str());
    
    if (inputFile.good()) 
     while(!inputFile.eof())
@@ -421,10 +421,41 @@ void recognizePoseObjects(typename pcl::rec_3d_framework::LocalRecognitionPipeli
        objects.writePointCloudsToFile(1);    
     } 
 
-//configure pose estimation based on parameters, regarding types of descriptors and hypothesis verification algorithms  
-int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points)
+pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::kinectGrabFrame()
 {
-    if (pathPlyModels.compare ("") == 0)
+        //get point cloud from the kinect 
+        OpenNIFrameSource::OpenNIFrameSource camera;
+        OpenNIFrameSource::PointCloudPtr frame;
+     
+        pcl::visualization::PCLVisualizer vis ("kinect");
+        pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points (new pcl::PointCloud<pcl::PointXYZ>);  
+        if (camera.isActive ())
+        {
+          pcl::ScopeTime frame_process ("Global frame processed ------------- ");
+          frame = camera.snap ();
+          if( frame->points.size() < 10 )
+          {
+         // pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points (new pcl::PointCloud<pcl::PointXYZ>);
+            cout << "point cloud is empty ...."<< endl;
+          }
+          else
+            pcl::copyPointCloud (*frame, *xyz_points);             
+               
+          //return(xyz_points);
+        } 
+  return(xyz_points);              
+}
+
+//configure pose estimation based on parameters, regarding types of descriptors and hypothesis verification algorithms  
+//int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points)
+int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects)
+{
+   pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points = kinectGrabFrame();
+   
+   if( xyz_points->points.size() < 10 )
+      return -1;
+
+   if (pathPlyModels.compare ("") == 0)
     {
    PCL_ERROR("Set the directory containing the models of main dataset in the config file\n");
          return -1;
