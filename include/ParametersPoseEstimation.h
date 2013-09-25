@@ -34,54 +34,52 @@ using namespace std;
 
 // class used to the parse configuration file and perform pose estimation
 class ParametersPoseEstimation
+{
+    public:
+        string pathPlyModels;
+        string desc_name;
+        string training_dir;
+        int force_retrain, icp_iterations, use_cache, splits, scene, detect_clutter, hv_method, use_hv, CG_THRESHOLD_,useKinect;
+        float thres_hyp, desc_radius, CG_SIZE_, sampling_density;
+
+    //constructor which initilizes the main paramters 
+    ParametersPoseEstimation(string filename)
     {
-        public:
-	      string pathPlyModels;
-          string desc_name;
-	      string training_dir;
-          int force_retrain, icp_iterations, use_cache, splits, scene, detect_clutter, hv_method, use_hv, CG_THRESHOLD_,useKinect;
-          float thres_hyp, desc_radius, CG_SIZE_, sampling_density;
-
-        //constructor which initilizes the main paramters 
-        ParametersPoseEstimation(string filename)
+        //check if the configuration file exists, otherwise use default configuration
+        if (!boost::filesystem::exists(filename))
         {
-            //check if the configuration file exists, otherwise use default configuration
-            if (!boost::filesystem::exists(filename))
-            {
-                cout<<"Unable to find path to the configuration file, default parameters will be loaded\n";
-                pathPlyModels = "/home/pacman/poseEstimation/data/PLY-MODELS/";
-                desc_name = "shot_omp";//"fpfh"
-                training_dir = "/home/pacman/poseEstimation/data/TRAINED-LOCAL-MODELS/";
-                force_retrain = 0;
-                icp_iterations = 5; 
-                use_cache = 1;
-                splits = 512;
-                scene = -1;
-                detect_clutter = 1;
-                hv_method = 2;
-                use_hv = 1;
-                thres_hyp = 0.2f;
-                desc_radius = 0.04f;
-                CG_THRESHOLD_ = 1;
-                CG_SIZE_ = 0.01f;//CG_SIZE_ = 0.005f;
-                sampling_density = 0.01;
-                useKinect = 0;
-            }
-            else 
-            {      
-                //parse the configuration file
-                cout <<"before config file";
-                parseConfigFile(filename);
-                cout <<"after config file";
-            }
-        };
-
-        //parse configuration file and set parameters values
-        void parseConfigFile(string filename);
-        
-        pcl::PointCloud<pcl::PointXYZ>::Ptr kinectGrabFrame();
-        //perform pose estimation for the 'xyz_points' scene
-       // int recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points);
-        int recognizePose(I_SegmentedObjects &objects);
+            cout<<"Unable to find path to the configuration file, default parameters will be loaded\n";
+            pathPlyModels = "/home/pacman/poseEstimation/data/PLY-MODELS/";
+            desc_name = "shot_omp";//"fpfh"
+            training_dir = "/home/pacman/poseEstimation/data/TRAINED-LOCAL-MODELS/";
+            force_retrain = 0;
+            icp_iterations = 5; 
+            use_cache = 1;
+            splits = 512;
+            scene = -1;
+            detect_clutter = 1;
+            hv_method = 2;
+            use_hv = 1;
+            thres_hyp = 0.2f;
+            desc_radius = 0.04f;
+            CG_THRESHOLD_ = 1;
+            CG_SIZE_ = 0.01f;//CG_SIZE_ = 0.005f;
+            sampling_density = 0.01;
+            useKinect = 0;
+        }
+        else 
+        {      
+            //parse the configuration file
+            parseConfigFile(filename);
+        }
     };
+
+    //parse configuration file and set parameters values
+    void parseConfigFile(string filename);
+    
+    pcl::PointCloud<pcl::PointXYZ>::Ptr kinectGrabFrame();
+    //perform pose estimation for the 'xyz_points' scene
+   // int recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points);
+    int recognizePose(I_SegmentedObjects &objects);
+};
 #endif	 
