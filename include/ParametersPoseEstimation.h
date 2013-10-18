@@ -39,6 +39,7 @@ class ParametersPoseEstimation
         string pathPlyModels;
         string desc_name;
         string training_dir;
+        string test_file;
         int force_retrain, icp_iterations, use_cache, splits, scene, detect_clutter, hv_method, use_hv, CG_THRESHOLD_,useKinect;
         float thres_hyp, desc_radius, CG_SIZE_, sampling_density;
 
@@ -66,6 +67,7 @@ class ParametersPoseEstimation
             CG_SIZE_ = 0.01f;//CG_SIZE_ = 0.005f;
             sampling_density = 0.01;
             useKinect = 0;
+	        test_file = "";
         }
         else 
         {      
@@ -78,6 +80,9 @@ class ParametersPoseEstimation
     void parseConfigFile(string filename);
     
     pcl::PointCloud<pcl::PointXYZ>::Ptr kinectGrabFrame();
+    pcl::PointCloud<pcl::PointXYZ>::Ptr loadPCDFile(string file_name);
+    bool down_sample_check(pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,double down_sample_size);
+ 
     //perform pose estimation for the 'xyz_points' scene
    // int recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points);
     int recognizePose(I_SegmentedObjects &objects);

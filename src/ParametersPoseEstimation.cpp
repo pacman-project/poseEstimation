@@ -103,6 +103,11 @@ using namespace std;
           getline(inputFile,parameterValue);
           useKinect = atoi(parameterValue.c_str());
       } 
+      else if(parameterName == "test_file")
+      {
+          getline(inputFile,parameterValue);
+          test_file = parameterValue;
+      }  
     }
    else
      cout<<"Unable to open file"<<filename;
@@ -316,7 +321,7 @@ void getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::v
 
 //perform object recognition and pose estimation for a given scene
 template<template<class > class DistT, typename PointT, typename FeatureT>
-void recognizePoseObjects(typename pcl::rec_3d_framework::LocalRecognitionPipeline<DistT, PointT, FeatureT> & local, I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points, int useKinect)
+void recognizePoseObjects(typename pcl::rec_3d_framework::LocalRecognitionPipeline<DistT, PointT, FeatureT> & local, I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points)
   
    {
       float Z_DIST_ = 1.25f, resolution = 0.0025f;
@@ -324,23 +329,8 @@ void recognizePoseObjects(typename pcl::rec_3d_framework::LocalRecognitionPipeli
       typename boost::shared_ptr<pcl::rec_3d_framework::Source<PointT> > model_source_ = local.getDataSource ();
       typedef typename pcl::PointCloud<PointT>::ConstPtr ConstPointInTPtr;
       typedef pcl::rec_3d_framework::Model<PointT> ModelT;
-      pcl::PointCloud<pcl::PointXYZ>::Ptr scene (new pcl::PointCloud<pcl::PointXYZ>);;
-     
-      if (useKinect==0)
-      {      
-       //load point cloud corresponding to the grabbed frame from Kinect
-       pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points (new pcl::PointCloud<pcl::PointXYZ>);
-   
-       if (pcl::io::loadPCDFile<pcl::PointXYZ> ("scene.pcd", *xyz_points) == -1) 
-           PCL_ERROR ("Couldn't read file frame.pcd \n");     
-
-       //remove nans from the input point cloud
-       //std::vector<int> indices;   
-       //pcl::removeNaNFromPointCloud(*points,*points, indices);
-       
-       //pcl::copyPointCloud (*points, *xyz_points);
-      }
-      
+      pcl::PointCloud<pcl::PointXYZ>::Ptr scene (new pcl::PointCloud<pcl::PointXYZ>);;     
+          
        //Step 1 -> Segment
        pcl::apps::DominantPlaneSegmentation<pcl::PointXYZ> dps;
        dps.setInputCloud (xyz_points);
@@ -359,7 +349,13 @@ void recognizePoseObjects(typename pcl::rec_3d_framework::LocalRecognitionPipeli
        Eigen::Vector3f normal_plane_ = Eigen::Vector3f (table_plane_[0], table_plane_[1], table_plane_[2]);
        dps.getTableCoefficients (table_plane_);
      
-       for (size_t i = 0; i < clusters.size (); i++)
+       if (clusters.size()==0)
+       {
+         cout<<"No clusters detected, adjust the values of the input parameters "<<endl;
+       }
+       else 
+       {
+        for (size_t i = 0; i < clusters.size (); i++)
         {
          *scene += *clusters[i];
         }         
@@ -418,7 +414,8 @@ void recognizePoseObjects(typename pcl::rec_3d_framework::LocalRecognitionPipeli
      
        objects.writeObjectsInfoToFile();
        objects.writePointCloudsToFile(0); 
-       objects.writePointCloudsToFile(1);    
+       objects.writePointCloudsToFile(1);   
+     } 
     } 
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::kinectGrabFrame()
@@ -441,16 +438,82 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::kinectGrabFrame()
           else
             pcl::copyPointCloud (*frame, *xyz_points);             
                
-          //return(xyz_points);
+          
         } 
   return(xyz_points);              
+}
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::loadPCDFile(string file_name)
+{
+  pcl::PCDReader reader;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points(new pcl::PointCloud<pcl::PointXYZ>() );
+
+  xyz_points->is_dense = false;
+  xyz_points->width = 640; xyz_points->height = 480;
+  xyz_points->points.resize (xyz_points->width *xyz_points->height);
+
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (file_name, *xyz_points) == -1) //* load the file
+  {
+    cout << "could not read file:" << file_name << endl;
+  }
+
+  // reader.read (file_name,*xyz_points);
+  return xyz_points;
+  
+}
+
+bool ParametersPoseEstimation::down_sample_check(pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,double down_sample_size)
+{
+  bool is_valid = true;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>());
+  pcl::VoxelGrid<pcl::PointXYZ> vox;
+
+  vox.setInputCloud(cloud);
+  vox.setLeafSize(down_sample_size,down_sample_size,down_sample_size);
+  vox.filter(*cloud_filtered);
+
+  if( cloud_filtered->points.size() < 10 )
+    is_valid = false;
+
+  return is_valid;
 }
 
 //configure pose estimation based on parameters, regarding types of descriptors and hypothesis verification algorithms  
 //int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points)
 int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects)
 {
-   pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points = kinectGrabFrame();
+  pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points( new pcl::PointCloud<pcl::PointXYZ>() );
+
+if(useKinect)
+   {
+      xyz_points = kinectGrabFrame();
+      //cout <<"points:" <<xyz_points->points.size();
+   }
+   else
+   {
+      if(test_file=="")
+        cout<<"Test file is empty, please provide a testing filename for testing the program..."<<endl;
+      else
+         xyz_points = loadPCDFile(test_file);    
+   }
+   
+   if( xyz_points->points.size() < 10 )
+      return -1;
+
+   //check the down_sampling using a voxel grid
+   bool is_valid = down_sample_check(xyz_points,0.02f);
+   if( !is_valid )
+   {
+     cout << "cloud is empty after downsampling!!!, aborting...." << endl;
+     return -1;
+   }
+
+   if (pathPlyModels.compare ("") == 0)
+    {
+         PCL_ERROR("Set the directory containing the models of main dataset in the config file\n");
+         return -1;
+    }
+
    //cout <<"points:" <<xyz_points->points.size();
    if( xyz_points->points.size() < 10 )
       return -1;
@@ -584,7 +647,7 @@ int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects)
       local.setICPIterations (icp_iterations);
       local.setKdtreeSplits (splits);
      
-      recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects,xyz_points,useKinect);
+      recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects,xyz_points);
       //recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects);
      
     }
@@ -621,7 +684,7 @@ int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects)
       local.setICPIterations (icp_iterations);
       local.setKdtreeSplits (splits);
     
-      recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects,xyz_points,useKinect);
+      recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects,xyz_points);
       //recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects); 
 
     }
@@ -654,7 +717,7 @@ int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects)
        local.setICPIterations (icp_iterations);
        local.setKdtreeSplits (splits);
      
-       recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::FPFHSignature33> (local,objects,xyz_points,useKinect);
+       recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::FPFHSignature33> (local,objects,xyz_points);
     // recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::FPFHSignature33> (local,objects);
     }
 } 

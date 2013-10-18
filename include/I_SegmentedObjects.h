@@ -54,8 +54,8 @@ class I_SegmentedObjects
             return objectsNames.at(index);
         }
         
-        // adds a new object name to the list of objects
-        void addObjectName(string &name);
+       // adds a new object name to the list of objects
+        void addObjectName(const string &name);
         
         //returns the vector of transformations (rotation and translation) of the detected objects
         boost::shared_ptr<vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > getTransforms ()

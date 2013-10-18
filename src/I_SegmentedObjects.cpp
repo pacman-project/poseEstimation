@@ -15,7 +15,7 @@ void I_SegmentedObjects::setTransforms(boost::shared_ptr<vector<Eigen::Matrix4f,
 }
 
 //adds an object name to the list of objects
-void I_SegmentedObjects::addObjectName(string &name)
+void I_SegmentedObjects::addObjectName(const string &name)
 {
     objectsNames.push_back(name);
 }
@@ -55,9 +55,12 @@ void I_SegmentedObjects::writePointCloudsToFile(int code)
         writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); 
     }
 
-    std::stringstream ss;
-    ss << pathToFiles << "scene.pcd";
-    writer.write<pcl::PointXYZ> (ss.str (), *scene, false); 
+    if( scene->points.size()  > 10  )
+    {
+      std::stringstream ss;
+      ss << pathToFiles << "scene.pcd";
+      writer.write<pcl::PointXYZ> (ss.str (), *scene, false); 
+    }     
 }
 
 //writes to file for each detected object: the object name and the pose (rotation and translation), the list of objects based on height and the list of objects based on occlusion score
