@@ -23,22 +23,27 @@ class I_SegmentedObjects
         vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> pointClouds;
         vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> segPointClouds;
         pcl::PointCloud<pcl::PointXYZ>::Ptr scene;
-
-        const char* pathToConfigFile; 
+        string pathToConfigFile; 
 
     public:        
 
         I_SegmentedObjects(string pathToFile)
         {
-           pathToConfigFile = parseConfigFile(pathToFile).c_str();
+          pathToConfigFile = pathToFile;   
+          if(!boost::filesystem::exists(pathToConfigFile))  
+                boost::filesystem::create_directory(pathToConfigFile);         
+        }
+
+        I_SegmentedObjects()
+        {
+          pathToConfigFile ="../data/recognizedObjects";          
+          if(!boost::filesystem::exists(pathToConfigFile))  
+                boost::filesystem::create_directory(pathToConfigFile);         
         }
 
         //writes to file information about the detected objects 
         void writeObjectsInfoToFile();        
    
-        //parse configuration file 
-        string parseConfigFile(string pathToFile);
-
         //creates a file to save information about objects
         void createFile(const char* filename);
         vector<int> getIdsObjects(vector<double> list);

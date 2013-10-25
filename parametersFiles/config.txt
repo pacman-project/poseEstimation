@@ -1,4 +1,3 @@
-recognizedObjects_dir:../data/recognizedObjects/
 descriptor_name:shot_omp
 models_dir:../data/PLY-MODELS
 training_dir:../data/TRAINED-LOCAL-MODELS

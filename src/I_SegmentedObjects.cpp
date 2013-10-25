@@ -7,38 +7,6 @@
       
 using namespace std;
 
-string I_SegmentedObjects::parseConfigFile(string pathToFile)
-{
-
-   string pathToConfigFile;
-   ifstream inputFile;
-   inputFile.open(pathToFile.c_str());
-   bool dir_found = false;
-
-   if (inputFile.good()) 
-    while((!inputFile.eof())&&(!dir_found))
-    {
-      string parameterName;
-      string parameterValue;
- 
-      getline(inputFile,parameterName,':');
-
-      if(parameterName == "recognizedObjects_dir")
-      {
-          getline(inputFile,parameterValue);
-          pathToConfigFile = parameterValue;          
-          if(!boost::filesystem::exists(pathToConfigFile))  
-                boost::filesystem::create_directory(pathToConfigFile);   
-          dir_found = true;
-      } 
-    }
-    else
-     cout<<"Unable to open file"<<pathToConfigFile;
-   
-   inputFile.close();
-
-   return pathToConfigFile;
-}
 //initialize the transforms_ variable to transforms
 void I_SegmentedObjects::setTransforms(boost::shared_ptr<vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > & transforms)
 {
@@ -55,7 +23,7 @@ void I_SegmentedObjects::addObjectName(const string &name)
 void I_SegmentedObjects::createFile(const char* filename)
 {
     stringstream fullFileName;
-    fullFileName<<pathToConfigFile<<filename;
+    fullFileName<<pathToConfigFile<<"/"<<filename;
     string newFileName = fullFileName.str();
 
     testFile.open(newFileName.c_str());
@@ -64,7 +32,7 @@ void I_SegmentedObjects::createFile(const char* filename)
 //saves to file the point clouds (code 0) or the segmented point clouds (code 1)
 void I_SegmentedObjects::writePointCloudsToFile(int code)
 {
-    pcl::PCDWriter writer;
+    pcl::PCDWriter writer;  
     vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> pointClouds_;   
 
     if (code==0)
@@ -79,9 +47,9 @@ void I_SegmentedObjects::writePointCloudsToFile(int code)
         stringstream ss;
 
         if (code==0)
-            ss << pathToConfigFile << "cloud_" << j << ".pcd";
+            ss << pathToConfigFile << "/cloud_" << j << ".pcd";
         else 
-            ss << pathToConfigFile << "segCloud_" << j << ".pcd";
+            ss << pathToConfigFile << "/segCloud_" << j << ".pcd";
 
         writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); 
     }
@@ -89,7 +57,7 @@ void I_SegmentedObjects::writePointCloudsToFile(int code)
     if( scene->points.size()  > 10  )
     {
       std::stringstream ss;
-      ss << pathToConfigFile << "scene.pcd";
+      ss << pathToConfigFile << "/scene.pcd";
       writer.write<pcl::PointXYZ> (ss.str (), *scene, false); 
     }     
 }

@@ -36,7 +36,7 @@ using namespace std;
 class ParametersPoseEstimation
 {
     public:
-        string pathPlyModels, desc_name, training_dir, recognizedObjects_dir, test_file;
+        string pathPlyModels, desc_name, training_dir, test_file;
         int force_retrain, icp_iterations, use_cache, splits, scene, detect_clutter, hv_method, use_hv, CG_THRESHOLD_,useKinect;
         float thres_hyp, desc_radius, CG_SIZE_, sampling_density;
 
@@ -51,13 +51,6 @@ class ParametersPoseEstimation
             pathPlyModels = "../data/PLY-MODELS/";
             desc_name = "shot_omp";//"fpfh"
             training_dir = "../data/TRAINED-LOCAL-MODELS/";
-
-            recognizedObjects_dir = "../data/recognizedObjects";
-
-            //check whether pathToFiles directory exists, otherwise create it
-            if(!boost::filesystem::exists(recognizedObjects_dir))
-                boost::filesystem::create_directory(recognizedObjects_dir);   
-
             force_retrain = 0;
             icp_iterations = 5; 
             use_cache = 1;

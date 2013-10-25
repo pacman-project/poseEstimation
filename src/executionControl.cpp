@@ -35,9 +35,15 @@ int main (int argc, char ** argv)
       //pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points;        
       //pcl::PCDWriter writer;  
 
-      I_SegmentedObjects objects(filename);
       ParametersPoseEstimation params(filename);
-      
+
+      //a default location for saving the detected objects is used in ../data/recognizedObjects
+      //I_SegmentedObjects objects();
+
+      //specify the location where to save the deteced objects
+      string recognizedObjects_dir = "../data/recognizedObjects"; 
+      I_SegmentedObjects objects(recognizedObjects_dir);
+
         //change useKinect value in the configuration file depending wether the Kinect sensor is used or not  
        // if(params.useKinect)
        // {

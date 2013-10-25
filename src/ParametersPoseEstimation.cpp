@@ -33,13 +33,6 @@ using namespace std;
           getline(inputFile,parameterValue);
           training_dir = parameterValue;
       } 
-      else if(parameterName == "recognizedObjects_dir")
-      {
-          getline(inputFile,parameterValue);
-          recognizedObjects_dir = parameterValue;
-          if(!boost::filesystem::exists(recognizedObjects_dir))  
-                boost::filesystem::create_directory(recognizedObjects_dir);   
-      } 
       else if(parameterName == "force_retrain")
       {
           getline(inputFile,parameterValue);
