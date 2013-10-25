@@ -1,6 +1,7 @@
+recognizedObjects_dir:../data/recognizedObjects/
 descriptor_name:shot_omp
-models_dir:/home/pacman/poseEstimation/data/PLY-MODELS
-training_dir:/home/pacman/poseEstimation/data/TRAINED-LOCAL-MODELS/
+models_dir:../data/PLY-MODELS
+training_dir:../data/TRAINED-LOCAL-MODELS
 force_retrain: 0
 icp_iterations: 5
 use_cache: 1
@@ -15,5 +16,5 @@ gc_threshold: 1
 gc_size: 0.005
 SAMPLING_DENSITY: 0.005
 useKinect: 1
-test_file:/home/pacman/poseEstimation/data/test/scene.pcd 
+test_file:../data/test/scene.pcd 
 

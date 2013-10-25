@@ -36,10 +36,7 @@ using namespace std;
 class ParametersPoseEstimation
 {
     public:
-        string pathPlyModels;
-        string desc_name;
-        string training_dir;
-        string test_file;
+        string pathPlyModels, desc_name, training_dir, recognizedObjects_dir, test_file;
         int force_retrain, icp_iterations, use_cache, splits, scene, detect_clutter, hv_method, use_hv, CG_THRESHOLD_,useKinect;
         float thres_hyp, desc_radius, CG_SIZE_, sampling_density;
 
@@ -50,9 +47,17 @@ class ParametersPoseEstimation
         if (!boost::filesystem::exists(filename))
         {
             cout<<"Unable to find path to the configuration file, default parameters will be loaded\n";
-            pathPlyModels = "/home/pacman/poseEstimation/data/PLY-MODELS/";
+
+            pathPlyModels = "../data/PLY-MODELS/";
             desc_name = "shot_omp";//"fpfh"
-            training_dir = "/home/pacman/poseEstimation/data/TRAINED-LOCAL-MODELS/";
+            training_dir = "../data/TRAINED-LOCAL-MODELS/";
+
+            recognizedObjects_dir = "../data/recognizedObjects";
+
+            //check whether pathToFiles directory exists, otherwise create it
+            if(!boost::filesystem::exists(recognizedObjects_dir))
+                boost::filesystem::create_directory(recognizedObjects_dir);   
+
             force_retrain = 0;
             icp_iterations = 5; 
             use_cache = 1;
@@ -67,7 +72,7 @@ class ParametersPoseEstimation
             CG_SIZE_ = 0.01f;//CG_SIZE_ = 0.005f;
             sampling_density = 0.01;
             useKinect = 0;
-	        test_file = "";
+	    test_file = "";
         }
         else 
         {      

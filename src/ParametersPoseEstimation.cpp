@@ -33,6 +33,13 @@ using namespace std;
           getline(inputFile,parameterValue);
           training_dir = parameterValue;
       } 
+      else if(parameterName == "recognizedObjects_dir")
+      {
+          getline(inputFile,parameterValue);
+          recognizedObjects_dir = parameterValue;
+          if(!boost::filesystem::exists(recognizedObjects_dir))  
+                boost::filesystem::create_directory(recognizedObjects_dir);   
+      } 
       else if(parameterName == "force_retrain")
       {
           getline(inputFile,parameterValue);
@@ -170,7 +177,6 @@ float generateOcclusionScore(pcl::PointCloud<PointT> &cloud, pcl::PointCloud<pcl
 
       }
 
-      //cout<<"occluded points:"<<occluded<<" score"<<(float)occluded/cloud.points.size()<<endl;
       return ((float)occluded/cloud.points.size()); 
     } 
 
@@ -237,15 +243,11 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr getSegmentedCloud(double &rate, pcl::PointCl
      //compute the rate of matched points
      nrCloudPoints = cloud_cluster->points.size();  
      rate = (float)nrCloudPoints/nrModelPoints;     
-     //cout<<"rate of matched points: "<<rate<<"\n";
-     
+          
      nrOccludedPoints =  occluded_PointCloud->points.size ();
      occluded_PointCloud->width = nrOccludedPoints;
      occluded_PointCloud->height = 1;
      occluded_PointCloud->is_dense = true;
-
-     //cout<<"occluded_PointCloud:"<<nrOccludedPoints<<endl;
-     //cout<<"occlusion score k-nn:"<<(float)nrOccludedPoints/nrModelPoints;
 
      cloud_cluster->width = nrCloudPoints;
      cloud_cluster->height = 1;
@@ -268,10 +270,9 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr getSegmentedCloud(double &rate, pcl::PointCl
 
      perpendicularPlane.getDistancesToModel(table_plane_,distances);     
      maxDist = *max_element(distances.begin(), distances.end());
-  
-     //cout<<"maxDist:"<<maxDist<<endl;
-     
+         
      return maxDist;
+
     }
 
 void getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths, std::string & ext)
@@ -389,7 +390,6 @@ void recognizePoseObjects(typename pcl::rec_3d_framework::LocalRecognitionPipeli
         
          //get the occlusion score
          occlusionScore = generateOcclusionScore(*model_aligned, scene,resolution); 
-         //cout<<"occlusionScore:"<<occlusionScore<<endl; 
          objects.addOcclusionScore(occlusionScore);          
 
          std::stringstream objectName_;
@@ -400,8 +400,6 @@ void recognizePoseObjects(typename pcl::rec_3d_framework::LocalRecognitionPipeli
          pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud (new pcl::PointCloud<pcl::PointXYZ>),occluded_PointCloud(new pcl::PointCloud<pcl::PointXYZ>), model_seg;
          copyPointCloud(*model_aligned, *pointCloud);
 
-         //model_seg = getSegmentedCloud(scene, pointCloud);
-         //model_seg = getSegmentedCloud(xyz_points, pointCloud);
          model_seg = getSegmentedCloud(rate, xyz_points, pointCloud, occluded_PointCloud);
 
          objects.addPointCloud(pointCloud);   
@@ -431,16 +429,14 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::kinectGrabFrame()
           pcl::ScopeTime frame_process ("Global frame processed ------------- ");
           frame = camera.snap ();
           if( frame->points.size() < 10 )
-          {
-         // pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points (new pcl::PointCloud<pcl::PointXYZ>);
-            cout << "point cloud is empty ...."<< endl;
-          }
+                 cout << "point cloud is empty ...."<< endl;
           else
             pcl::copyPointCloud (*frame, *xyz_points);             
                
           
-        } 
-  return(xyz_points);              
+        }
+ 
+        return(xyz_points);              
 }
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::loadPCDFile(string file_name)
@@ -457,7 +453,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::loadPCDFile(string
     cout << "could not read file:" << file_name << endl;
   }
 
-  // reader.read (file_name,*xyz_points);
   return xyz_points;
   
 }
@@ -479,15 +474,13 @@ bool ParametersPoseEstimation::down_sample_check(pcl::PointCloud<pcl::PointXYZ>:
 }
 
 //configure pose estimation based on parameters, regarding types of descriptors and hypothesis verification algorithms  
-//int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points)
 int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points( new pcl::PointCloud<pcl::PointXYZ>() );
 
 if(useKinect)
    {
-      xyz_points = kinectGrabFrame();
-      //cout <<"points:" <<xyz_points->points.size();
+      xyz_points = kinectGrabFrame();    
    }
    else
    {
@@ -514,7 +507,6 @@ if(useKinect)
          return -1;
     }
 
-   //cout <<"points:" <<xyz_points->points.size();
    if( xyz_points->points.size() < 10 )
       return -1;
 
@@ -648,7 +640,6 @@ if(useKinect)
       local.setKdtreeSplits (splits);
      
       recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects,xyz_points);
-      //recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects);
      
     }
      
@@ -685,7 +676,6 @@ if(useKinect)
       local.setKdtreeSplits (splits);
     
       recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects,xyz_points);
-      //recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local,objects); 
 
     }
      
@@ -718,6 +708,5 @@ if(useKinect)
        local.setKdtreeSplits (splits);
      
        recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::FPFHSignature33> (local,objects,xyz_points);
-    // recognizePoseObjects<flann::L1, pcl::PointXYZ, pcl::FPFHSignature33> (local,objects);
     }
 } 

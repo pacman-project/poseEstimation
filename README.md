@@ -7,7 +7,7 @@ Provided a set of object models (ply files), the software performs pose estimati
 The object recognition and pose estimation are performed using algorithms available in PCL 1.7, for feature extraction, hypothesis verification, consistency grouping, etc.
 The parameters used to configure the recognition pipeline are provided in /parametersFiles/config.txt.
 
-The optput is saved in the folder /recognizedObjects and consists of a text file (with object ids, pose parameters, and the order of objects based on height), the segmented point clouds and the model point clouds.  
+The optput is saved in the folder /data/recognizedObjects and consists of a text file (with object ids, pose parameters, and the order of objects based on height), the segmented point clouds and the model point clouds.  
 
 Installation
 ------------
@@ -15,12 +15,23 @@ The software module depends on PCL 1.7 (pcl-trunk). Additional information about
 
 http://pointclouds.org/downloads/source.html
 
+In order to use the module inside pacman place it at the same level with the pacman folder.
+
+In order to use the module with ROS, relative paths need to be replaced with full paths in the following files:
+
+    - parametersFiles/config.txt 
+    - if a config file is not provided, it will use the default parameters defined in include/ParametersPoseEstimation.h, which also need to be updated 
+
 Example files
 -------------
 
 There are two options:
 a) record a scene using the Kinect sensor (set in the configuration file usekinect = 1)
-Running the executable demo_Task5.1 will use as input the frame grabbed from the Kinect sensor.
+Running the executable build/executionControl will use as input the frame grabbed from the Kinect sensor.
+
+check the paths provided in parametersFiles/config.txt and in src/executionControl
+
+
 b) use an already recorded scene as input (set in the configuration file usekinect = 0)
 To visualize the scene you can use pcl_viewer
 
@@ -48,3 +59,4 @@ vtkPolyLine’) - pcl error:
 add vtkPolyLine.h header to pcl/segmentation/example_supervoxels.cpp
 source:
 https://github.com/henningpohl/pcl/commit/f66dc5df7b496b4a54f2638fdeac2142c1b6acb8
+

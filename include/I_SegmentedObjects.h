@@ -2,7 +2,6 @@
 #define __I_SEGMENTEDOBJECTS_H__
 #include <pcl/pcl_macros.h>  
 #include <pcl/io/pcd_io.h>  
-//#include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
 #include <boost/filesystem.hpp>
 #include <string>
 #include <sstream> 
@@ -18,25 +17,27 @@ class I_SegmentedObjects
         //ordered list of objects based on height map- input (direction vector -dominat plane segmentation normal )
         boost::shared_ptr < vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_; 
         ofstream testFile;
-        vector<double> heightList;
-        vector<double> occlusionScoreList;
+
+        vector<double> heightList, occlusionScoreList;
+
         vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> pointClouds;
         vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> segPointClouds;
         pcl::PointCloud<pcl::PointXYZ>::Ptr scene;
-        const char* pathToFiles; 
+
+        const char* pathToConfigFile; 
 
     public:        
 
-        I_SegmentedObjects()
+        I_SegmentedObjects(string pathToFile)
         {
-            //check whether pathToFiles directory exists, otherwise create it
-            pathToFiles = "/home/pacman/poseEstimation/data/recognizedObjects/";
-            if(!boost::filesystem::exists(pathToFiles))
-            boost::filesystem::create_directory(pathToFiles);   
+           pathToConfigFile = parseConfigFile(pathToFile).c_str();
         }
 
         //writes to file information about the detected objects 
         void writeObjectsInfoToFile();        
+   
+        //parse configuration file 
+        string parseConfigFile(string pathToFile);
 
         //creates a file to save information about objects
         void createFile(const char* filename);

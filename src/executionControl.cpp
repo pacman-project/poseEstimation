@@ -1,6 +1,3 @@
-//#include <pcl/visualization/pcl_visualizer.h>
-//#include <pcl/apps/3d_rec_framework/tools/openni_frame_source.h>
-//#include <pcl/filters/passthrough.h>
 #include "ParametersPoseEstimation.h"
 
 using namespace std;
@@ -34,13 +31,13 @@ int main (int argc, char ** argv)
 {
     
       string filename = "../parametersFiles/config.txt";     
-
+ 
       //pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points;        
       //pcl::PCDWriter writer;  
-      
-      ParametersPoseEstimation params(filename);
-      I_SegmentedObjects objects;
 
+      I_SegmentedObjects objects(filename);
+      ParametersPoseEstimation params(filename);
+      
         //change useKinect value in the configuration file depending wether the Kinect sensor is used or not  
        // if(params.useKinect)
        // {
