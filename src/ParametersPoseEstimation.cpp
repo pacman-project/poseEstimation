@@ -437,7 +437,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::loadPCDFile(string
   pcl::PCDReader reader;
   pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points(new pcl::PointCloud<pcl::PointXYZ>() );
 
-  xyz_points->is_dense = false;
+  xyz_points->is_dense = true;
   xyz_points->width = 640; xyz_points->height = 480;
   xyz_points->points.resize (xyz_points->width *xyz_points->height);
 
