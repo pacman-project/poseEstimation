@@ -22,18 +22,29 @@ In order to use the module with ROS, relative paths need to be replaced with ful
     - parametersFiles/config.txt 
     - if a config file is not provided, it will use the default parameters defined in include/ParametersPoseEstimation.h, which also need to be updated 
 
-Example files
--------------
+Running the software
+--------------------
 
 There are two options:
+
 a) record a scene using the Kinect sensor (set in the configuration file usekinect = 1)
-Running the executable build/executionControl will use as input the frame grabbed from the Kinect sensor.
+Running the executable 
+
+      build/executionControl 
+
+will use as input the frame grabbed from the Kinect sensor.
 
 check the paths provided in parametersFiles/config.txt and in src/executionControl
 
 
 b) use an already recorded scene as input (set in the configuration file usekinect = 0)
-To visualize the scene you can use pcl_viewer
+
+ In the folder poseEstimation/data/test_files a number of example scenes are provided.
+To select another scene provide the correct name in the config file:
+
+test_file:../data/test_files/scene.pcd
+
+To visualize the scene you can use pcl_viewer.
 
 Note
 ----
