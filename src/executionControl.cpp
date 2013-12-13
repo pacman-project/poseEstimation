@@ -32,10 +32,10 @@ int main (int argc, char ** argv)
     
       string filename = "../parametersFiles/config.txt";     
  
-      //pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points;        
       //pcl::PCDWriter writer;  
 
       ParametersPoseEstimation params(filename);
+      pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points = params.kinectGrabFrame();
 
       //a default location for saving the detected objects is used in ../data/recognizedObjects
       //I_SegmentedObjects objects();
@@ -55,9 +55,9 @@ int main (int argc, char ** argv)
        //  }       
            
         //perform pose estimation for the objects in the point cloud
-        //params.recognizePose(objects,xyz_points);
+        params.recognizePose(objects,xyz_points);
 
-        params.recognizePose(objects);        
+        //params.recognizePose(objects);        
  
        return(0); 
 }

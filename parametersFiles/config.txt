@@ -14,6 +14,6 @@ desc_radius: 0.04
 gc_threshold: 1
 gc_size: 0.005
 SAMPLING_DENSITY: 0.005
-useKinect: 0
+useKinect: 1
 test_file:../data/test_files/scene.pcd
 

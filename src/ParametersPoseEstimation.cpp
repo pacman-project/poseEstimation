@@ -414,9 +414,10 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::kinectGrabFrame()
         //get point cloud from the kinect 
         OpenNIFrameSource::OpenNIFrameSource camera;
         OpenNIFrameSource::PointCloudPtr frame;
-     
+        Eigen::Affine3f t; 
+
         pcl::visualization::PCLVisualizer vis ("kinect");
-        pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points (new pcl::PointCloud<pcl::PointXYZ>);  
+        pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points (new pcl::PointCloud<pcl::PointXYZ>), output_cloud (new pcl::PointCloud<pcl::PointXYZ>);  
         if (camera.isActive ())
         {
           pcl::ScopeTime frame_process ("Global frame processed ------------- ");
@@ -426,10 +427,11 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::kinectGrabFrame()
           else
             pcl::copyPointCloud (*frame, *xyz_points);             
                
-          
+          pcl::getTransformation(x,y,z,roll,pitch,yaw,t);
+          pcl::transformPointCloud(*xyz_points,*output_cloud,t); 
         }
  
-        return(xyz_points);              
+        return(output_cloud);              
 }
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr ParametersPoseEstimation::loadPCDFile(string file_name)
@@ -467,10 +469,10 @@ bool ParametersPoseEstimation::down_sample_check(pcl::PointCloud<pcl::PointXYZ>:
 }
 
 //configure pose estimation based on parameters, regarding types of descriptors and hypothesis verification algorithms  
-int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects)
+int ParametersPoseEstimation::recognizePose(I_SegmentedObjects &objects,pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points( new pcl::PointCloud<pcl::PointXYZ>() );
-
+/*  pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points( new pcl::PointCloud<pcl::PointXYZ>() );
+  useKinect = true;
 if(useKinect)
    {
       xyz_points = kinectGrabFrame();    
@@ -482,7 +484,7 @@ if(useKinect)
       else
          xyz_points = loadPCDFile(test_file);    
    }
-   
+*/   
    if( xyz_points->points.size() < 10 )
       return -1;
 

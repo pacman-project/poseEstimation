@@ -8,6 +8,7 @@
 #include <pcl/apps/dominant_plane_segmentation.h>
 #include <pcl/recognition/hv/hv_papazov.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/transforms.h>
 #include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
 #include <pcl/apps/3d_rec_framework/pc_source/mesh_source.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
@@ -39,18 +40,23 @@ class ParametersPoseEstimation
         string pathPlyModels, desc_name, training_dir, test_file;
         int force_retrain, icp_iterations, use_cache, splits, scene, detect_clutter, hv_method, use_hv, CG_THRESHOLD_,useKinect;
         float thres_hyp, desc_radius, CG_SIZE_, sampling_density;
+        float x, y, z, pitch, roll, yaw;
 
     //constructor which initilizes the main paramters 
     ParametersPoseEstimation(string filename)
     {
+        x =0; y =0; z =0.5; pitch=0; roll = -0.7; yaw = 0;
+
         //check if the configuration file exists, otherwise use default configuration
         if (!boost::filesystem::exists(filename))
         {
             cout<<"Unable to find path to the configuration file, default parameters will be loaded\n";
-
-            pathPlyModels = "../data/PLY-MODELS/";
+            string root_path = "/home/pacman/CODE/poseEstimation/data";
+            //pathPlyModels = "../data/PLY-MODELS/";
+            pathPlyModels = root_path + "/PLY-MODELS/";
             desc_name = "shot_omp";//"fpfh"
-            training_dir = "../data/TRAINED-LOCAL-MODELS/";
+            //training_dir = "../data/TRAINED-LOCAL-MODELS/";
+            training_dir = root_path + "/TRAINED-LOCAL-MODELS/";
             force_retrain = 0;
             icp_iterations = 5; 
             use_cache = 1;
@@ -83,6 +89,6 @@ class ParametersPoseEstimation
  
     //perform pose estimation for the 'xyz_points' scene
    // int recognizePose(I_SegmentedObjects &objects, pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points);
-    int recognizePose(I_SegmentedObjects &objects);
+    int recognizePose(I_SegmentedObjects &objects,pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_points);
 };
 #endif	 
