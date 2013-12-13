@@ -36,7 +36,7 @@ class I_SegmentedObjects
 
         I_SegmentedObjects()
         {
-          pathToConfigFile ="../data/recognizedObjects";          
+          pathToConfigFile ="/home/pacman/CODE/poseEstimation/data/recognizedObjects";          
           if(!boost::filesystem::exists(pathToConfigFile))  
                 boost::filesystem::create_directory(pathToConfigFile);         
         }
